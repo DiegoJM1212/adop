@@ -161,6 +161,8 @@ app.delete('/mascota/:id', async (req, res) => {
     }
 });
 
-const PORT = process.env.PORT;
-console.log(`El puerto utilizado es: ${PORT}`);
+const port = process.env.PORT || 3000;  // Usa el puerto proporcionado por Render, o 3000 como fallback
+app.listen(port, () => {
+  console.log(`Servidor escuchando en el puerto ${port}`);
+});
 
