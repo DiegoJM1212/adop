@@ -1,7 +1,6 @@
 const express = require('express');
 const sql = require('mssql');
 const app = express();
-const PORT = process.env.PORT;
 
 // Configuración de la base de datos
 const config = {
@@ -162,7 +161,6 @@ app.delete('/mascota/:id', async (req, res) => {
     }
 });
 
-// Iniciar el servidor en el puerto 3001
-app.listen(PORT, () => {
-    console.log(`API escuchando en el puerto ${PORT}`);
-});
+const PORT = process.env.PORT;
+console.log(`El puerto utilizado es: ${PORT}`);
+
