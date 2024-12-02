@@ -160,8 +160,12 @@ app.delete('/mascota/:id', async (req, res) => {
         await sql.close();
     }
 });
+// Ruta raíz para verificar el estado del servidor
+app.get('/', (req, res) => {
+    res.json({ message: 'Bienvenido a la API de KawaiPet' });
+});
 
-const port = process.env.PORT || 3000;  // Usa el puerto proporcionado por Render, o 3000 como fallback
+const port = process.env.PORT;  // Usa el puerto proporcionado por Render, o 3000 como fallback
 app.listen(port, () => {
   console.log(`Servidor escuchando en el puerto ${port}`);
 });
