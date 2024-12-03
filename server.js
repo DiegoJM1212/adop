@@ -9,10 +9,12 @@ const config = {
     server: 'diegojm.database.windows.net', // Nombre del servidor de Azure SQL
     database: 'kawaipet', // Nombre de la base de datos en Azure
     options: {
-      encrypt: true, // Habilita la encriptación para la conexión segura
-      trustServerCertificate: false, // No confiar en certificados no firmados
-    },
-  };
+        encrypt: true, // Habilita la encriptación para la conexión segura
+        trustServerCertificate: false, // No confiar en certificados no firmados
+        connectionTimeout: 30000, // 30 segundos para la conexión
+        requestTimeout: 30000 // 30 segundos para las consultas
+    }
+};
 
 // Middleware para aceptar solicitudes JSON
 app.use(express.json());
