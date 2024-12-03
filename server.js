@@ -1,6 +1,5 @@
 const express = require('express');
 const sql = require('mssql');
-const cors = require('cors');  // Asegúrate de que cors esté instalado
 const app = express();
 
 // Configuración de la base de datos
@@ -14,21 +13,15 @@ const config = {
         trustServerCertificate: false, // No confiar en certificados no firmados
         connectionTimeout: 30000, // 30 segundos para la conexión
         requestTimeout: 30000 // 30 segundos para las consultas
-    }
+    },
 };
-
-// Configuración de CORS
-app.use(cors({
-    origin: 'https://kawai-oc47.onrender.com', // Reemplaza con el dominio de tu frontend
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
 
 // Middleware para aceptar solicitudes JSON
 app.use(express.json());
 
 // Middleware global para limpiar saltos de línea y caracteres no deseados
 app.use((req, res, next) => {
+    // Eliminar cualquier salto de línea o retorno de carro en la URL
     req.url = req.url.replace(/[\n\r%0A]+/g, '').trim();
     next();
 });
@@ -55,14 +48,14 @@ app.get('/mascotas', async (req, res) => {
 
 // Ruta para obtener una mascota por ID
 app.get('/mascota/:id', async (req, res) => {
-    const id = req.params.id.trim();  // Eliminar cualquier espacio o salto de línea del parámetro
+    const id = req.params.id.trim(); // Eliminar cualquier espacio o salto de línea del parámetro
 
     try {
         // Conectar a la base de datos
         await sql.connect(config);
 
         // Realizar la consulta para obtener la mascota por ID
-        const result = await sql.querySELECT * FROM mascotas_adopcion WHERE id = ${id};
+        const result = await sql.query`SELECT * FROM mascotas_adopcion WHERE id = ${id}`;
 
         // Si no se encuentra la mascota
         if (result.recordset.length === 0) {
@@ -94,8 +87,8 @@ app.post('/mascota', async (req, res) => {
         await sql.connect(config);
 
         // Insertar la nueva mascota en la base de datos
-        await sql.queryINSERT INTO mascotas_adopcion (nombre, tipo, disponibilidad, foto) 
-                    VALUES (${nombre}, ${tipo}, ${disponibilidad || 1}, ${foto || null});
+        await sql.query`INSERT INTO mascotas_adopcion (nombre, tipo, disponibilidad, foto) 
+                    VALUES (${nombre}, ${tipo}, ${disponibilidad || 1}, ${foto || null})`;
 
         // Responder con éxito
         return res.status(201).json({ message: 'Mascota agregada con éxito' });
@@ -110,7 +103,7 @@ app.post('/mascota', async (req, res) => {
 
 // Ruta para actualizar una mascota
 app.put('/mascota/:id', async (req, res) => {
-    const id = req.params.id.trim();  // Eliminar cualquier espacio o salto de línea del parámetro
+    const id = req.params.id.trim(); // Eliminar cualquier espacio o salto de línea del parámetro
     const { nombre, tipo, disponibilidad, foto } = req.body;
 
     try {
@@ -123,9 +116,9 @@ app.put('/mascota/:id', async (req, res) => {
         await sql.connect(config);
 
         // Realizar la actualización de la mascota
-        const result = await sql.queryUPDATE mascotas_adopcion 
+        const result = await sql.query`UPDATE mascotas_adopcion 
                                     SET nombre = ${nombre}, tipo = ${tipo}, disponibilidad = ${disponibilidad}, foto = ${foto} 
-                                    WHERE id = ${id};
+                                    WHERE id = ${id}`;
 
         // Si no se encuentra la mascota
         if (result.rowsAffected[0] === 0) {
@@ -145,14 +138,14 @@ app.put('/mascota/:id', async (req, res) => {
 
 // Ruta para eliminar una mascota
 app.delete('/mascota/:id', async (req, res) => {
-    const id = req.params.id.trim();  // Eliminar cualquier espacio o salto de línea del parámetro
+    const id = req.params.id.trim(); // Eliminar cualquier espacio o salto de línea del parámetro
 
     try {
         // Conectar a la base de datos
         await sql.connect(config);
 
         // Eliminar la mascota de la base de datos
-        const result = await sql.queryDELETE FROM mascotas_adopcion WHERE id = ${id};
+        const result = await sql.query`DELETE FROM mascotas_adopcion WHERE id = ${id}`;
 
         // Si no se encuentra la mascota
         if (result.rowsAffected[0] === 0) {
@@ -175,7 +168,10 @@ app.get('/', (req, res) => {
     res.json({ message: 'Bienvenido a la API de KawaiPet' });
 });
 
-const port = process.env.PORT;  // Usa el puerto proporcionado por Render, o 3000 como fallback
+// Maneja la solicitud de favicon para que no se genere un error 404
+app.get('/favicon.ico', (req, res) => res.status(204));  // Responde con No Content (204)
+
+const port = process.env.PORT || 3000;  // Usa el puerto proporcionado por Render, o 3000 como fallback
 app.listen(port, () => {
-  console.log(Servidor escuchando en el puerto ${port});
+  console.log(`Servidor escuchando en el puerto ${port}`);
 });
