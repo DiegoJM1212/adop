@@ -15,7 +15,14 @@ const config = {
         requestTimeout: 30000 // 30 segundos para las consultas
     },
 };
-
+const cors = require('cors');
+app.use(cors({
+  origin: 'https://kawai-oc47.onrender.com'
+    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Métodos permitidos
+    allowedHeaders: ['Content-Type', 'Authorization'], // Headers permitidos
+    credentials: true, // Permite credenciales
+    maxAge: 86400 // Cache de preflight por 24 horas
+}));
 // Middleware para aceptar solicitudes JSON
 app.use(express.json());
 
